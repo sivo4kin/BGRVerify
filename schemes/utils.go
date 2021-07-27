@@ -1,17 +1,17 @@
 package main
 
 import (
-	"crypto/rsa"
 	"crypto/rand"
-	"fmt"
-	"os"
-	"math/big"
-	"github.com/bjornvdlaan/go-solidity-sha3"
+	"crypto/rsa"
 	"encoding/hex"
+	"fmt"
+	"github.com/miguelmota/go-solidity-sha3"
 	"io/ioutil"
+	"math/big"
+	"os"
 )
 
-func read_file() (string) {
+func read_file() string {
 	b, err := ioutil.ReadFile("data.txt") // just pass the file name
 	if err != nil {
 		fmt.Print(err)
@@ -22,7 +22,7 @@ func read_file() (string) {
 	return string(b) // convert content to a 'string'
 }
 
-func read_file_bytes() ([]byte) {
+func read_file_bytes() []byte {
 	b, err := ioutil.ReadFile("data.txt") // just pass the file name
 	if err != nil {
 		fmt.Print(err)
@@ -146,7 +146,7 @@ func split_inverse(b bool, x []byte) []byte {
 }
 
 func print_binary(b []byte) {
-	for _, n := range (b) {
+	for _, n := range b {
 		fmt.Printf("%08b", n)
 	}
 	fmt.Println("")

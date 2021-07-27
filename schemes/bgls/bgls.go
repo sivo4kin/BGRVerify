@@ -5,10 +5,9 @@ package bgls
 
 import (
 	"crypto/rand"
+	"github.com/miguelmota/go-solidity-sha3"
 	"math/big"
-	"github.com/bjornvdlaan/go-solidity-sha3"
 )
-
 
 //AggSig holds paired sequences of keys and messages, and one signature
 type AggSig struct {
@@ -39,7 +38,6 @@ func ComputePublicKey(curve CurveSystem, sk *big.Int) (Point, Point) {
 	X := curve.GetG2().Mul(sk)
 	return W, X
 }
-
 
 // Creates a signature on a message with a private key, with prepending the public key to the message.
 func Sign(curve CurveSystem, x *big.Int, v Point, msg []byte) Point {

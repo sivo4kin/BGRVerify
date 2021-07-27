@@ -1,20 +1,20 @@
 package main
 
 import (
+	b2 "bgls"
+	"crypto/rand"
 	"crypto/rsa"
 	"fmt"
-	"crypto/rand"
-	"os"
 	"math/big"
-	. "./bgls"
+	"os"
 )
 
 func main() {
-	//bls()
-	//bgls()
+	bls()
+	bgls()
 	multibgls()
-	//rsaverify()
-	//bgr()
+	rsaverify()
+	bgr()
 }
 
 func ecdsa() {
@@ -23,10 +23,10 @@ func ecdsa() {
 }
 
 func bls() {
-	curve := CurveSystem(Altbn128)
+	curve := b2.CurveSystem(b2.Altbn128)
 
 	//generate key
-	x, _, X, _ := KeyGen(curve)
+	x, _, X, _ := b2.KeyGen(curve)
 
 	message := read_file_bytes()
 	label := []byte(fmt.Sprintf("example.com/api/%d", 1))
@@ -34,10 +34,10 @@ func bls() {
 	concat := append(message, label...)
 
 	//create signature
-	sig := Sign(curve, x, X, concat)
+	sig := b2.Sign(curve, x, X, concat)
 
 	//verify
-	fmt.Println("verification:", VerifySingleSignature(curve, sig, X, concat))
+	fmt.Println("verification:", b2.VerifySingleSignature(curve, sig, X, concat))
 
 	fmt.Println("sig:", sig.ToAffineCoords())
 	fmt.Println("message:", bytestohex(concat))
@@ -46,16 +46,16 @@ func bls() {
 
 func multibgls() {
 	number_of_signers := 10
-	curve := CurveSystem(Altbn128)
+	curve := b2.CurveSystem(b2.Altbn128)
 
-	var sigs []Point
-	var publickeys []Point
+	var sigs []b2.Point
+	var publickeys []b2.Point
 	var msgs [][]byte
 
 	//Initialization
 	for i := 0; i < number_of_signers; i++ {
 		//generate key
-		x, _, X, _ := KeyGen(curve)
+		x, _, X, _ := b2.KeyGen(curve)
 
 		message := read_file_bytes()
 		label := []byte(fmt.Sprintf("example.com/api/%d", i))
@@ -63,7 +63,7 @@ func multibgls() {
 		concat := append(message, label...)
 
 		//create signature
-		sig := Sign(curve, x, X, concat)
+		sig := b2.Sign(curve, x, X, concat)
 
 		//save for later
 		publickeys = append(publickeys, X)
@@ -71,10 +71,10 @@ func multibgls() {
 		sigs = append(sigs, sig)
 
 		//aggregate signature
-		aggsig := AggregateSignatures(sigs[:i+1])
+		aggsig := b2.AggregateSignatures(sigs[:i+1])
 
 		//verify
-		if VerifyAggregateSignature(curve, aggsig, publickeys[:i+1], msgs[:i+1]) {
+		if b2.VerifyAggregateSignature(curve, aggsig, publickeys[:i+1], msgs[:i+1]) {
 			//print signature
 			fmt.Println("sig", i, aggsig.ToAffineCoords())
 		} else {
@@ -96,16 +96,16 @@ func multibgls() {
 
 func bgls() {
 	number_of_signers := 10
-	curve := CurveSystem(Altbn128)
+	curve := b2.CurveSystem(b2.Altbn128)
 
-	var sigs []Point
-	var publickeys []Point
+	var sigs []b2.Point
+	var publickeys []b2.Point
 	var msgs [][]byte
 
 	//Initialization
 	for i := 0; i < number_of_signers; i++ {
 		//generate key
-		x, _, X, _ := KeyGen(curve)
+		x, _, X, _ := b2.KeyGen(curve)
 
 		message := read_file_bytes()
 		label := []byte(fmt.Sprintf("example.com/api/%d", i))
@@ -113,7 +113,7 @@ func bgls() {
 		concat := append(message, label...)
 
 		//create signature
-		sig := Sign(curve, x, X, concat)
+		sig := b2.Sign(curve, x, X, concat)
 
 		//save for later
 		publickeys = append(publickeys, X)
@@ -122,10 +122,10 @@ func bgls() {
 	}
 
 	//aggregate signature
-	aggsig := AggregateSignatures(sigs)
+	aggsig := b2.AggregateSignatures(sigs)
 
 	//verify
-	fmt.Println(VerifyAggregateSignature(curve, aggsig, publickeys, msgs))
+	fmt.Println(b2.VerifyAggregateSignature(curve, aggsig, publickeys, msgs))
 
 	//print signature
 	fmt.Println("sig:", aggsig.ToAffineCoords())
@@ -190,7 +190,7 @@ func bgr() {
 		publickeys = append(publickeys, key.pk)
 		messages = append(messages, message)
 		labels = append(labels, label)
-		}
+	}
 
 	fmt.Println("Keys")
 	for ki, ke := range publickeys {
@@ -199,7 +199,7 @@ func bgr() {
 
 	var sig BGRSig
 
-	for j := 1; j < number_of_signers + 1; j++ {
+	for j := 1; j < number_of_signers+1; j++ {
 		fmt.Println("Number of signers:", j)
 
 		//create clean signature
@@ -221,7 +221,6 @@ func bgr() {
 			for l := 0; l < j; l++ {
 				fmt.Printf("r%d: %d\n", l, new(big.Int).SetBytes(sig.r[l]))
 			}
-
 
 		} else {
 			os.Exit(2)
